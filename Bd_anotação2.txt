@@ -1,0 +1,77 @@
+Banco de Dados: sakila
+- Filtros com WHERE e operadores lógicos
+SELECT actor_id, first_name, last_name FROM actor WHERE first_name = 'Cristian';
+SELECT payment_id, payment_date, amount FROM payment WHERE NOT amount >= 5;
+SELECT payment_id, payment_date, amount FROM payment WHERE amount >= 5 AND amount <= 10;
+SELECT payment_id, payment_date, amount FROM payment WHERE amount BETWEEN 5 AND 10;
+- Valores únicos com DISTINCT
+SELECT DISTINCT first_name FROM actor;
+- Unir resultados com UNION
+SELECT actor_id, first_name FROM actor WHERE first_name = 'Alan'
+UNION
+SELECT actor_id, first_name FROM actor WHERE first_name = 'PENELOPE';
+- Inserção de dados com INSERT INTO
+INSERT INTO city (city, country_id) VALUES ('Chique Chique Bahia', 20);
+SELECT * FROM city WHERE city = 'Chique Chique Bahia';
+- Atualização com UPDATE
+UPDATE city SET city = 'xiquetoso bahia' WHERE city_id = 603;
+- Exclusão com DELETE
+DELETE FROM city WHERE city_id = 603;
+- Inserção em tabela film
+INSERT INTO film (film_id, title, description, release_year, language_id, rental_duration)
+VALUES (1001, 'Batman', 'Filme é bom', 2008, 1, 5);
+- Alterar estrutura da tabela com ALTER TABLE
+ALTER TABLE film MODIFY rental_duration INT NULL;
+ALTER TABLE film ADD IMDB_TOMATO VARCHAR(250);
+ALTER TABLE film DROP COLUMN IMDB_TOMATO;
+- Criar colunas temporárias com AS
+SELECT payment_id, customer_id, rental_id + amount AS Pagamentos_totais FROM payment;
+- Tratamento de valores nulos com IFNULL e COALESCE
+SELECT address_id, address, IFNULL(address2, 'cheiro bom') AS Tipo_Cheiro FROM address;
+SELECT address_id, address, COALESCE(address2, 'cheiro bom', postal_code, 999) AS Tipo_Cheiro FROM
+address;
+- Ordenação com ORDER BY
+SELECT * FROM customer ORDER BY create_date ASC;
+SELECT * FROM customer ORDER BY create_date DESC;
+- Funções agregadas
+SELECT MIN(amount) AS Valor_minimo FROM payment;
+SELECT AVG(amount) AS Valor_medio FROM payment;
+SELECT MAX(amount) AS Valor_maximo FROM payment;
+SELECT amount FROM payment
+
+Resumo de Comandos SQL
+
+WHERE amount > (SELECT AVG(amount) FROM payment)
+ORDER BY amount DESC;
+Banco de Dados: classicmodels
+- Consulta de produtos
+SELECT * FROM products;
+SELECT COUNT(productCode) AS quantidade_estoque FROM products;
+JOIN entre tabelas
+- INNER JOIN simples
+SELECT c.customer_id AS cliente_customer_id, p.customer_id AS pagamento_customer_id
+FROM customer c
+INNER JOIN payment p ON c.customer_id = p.customer_id;
+- INNER JOIN com GROUP BY e CONCAT
+SELECT CONCAT('Cliente: ', customerName, ' Total Pago: ', SUM(amount)) AS OBSERVACAO
+FROM customers
+INNER JOIN payments USING (customerNumber)
+GROUP BY customerName;
+Banco de Dados: employees
+- LEFT JOIN
+SELECT e.emp_no, e.first_name, s.salary
+FROM employees AS e
+LEFT JOIN salaries AS s ON e.emp_no = s.emp_no;
+- CASE com MAX, categorização e aumento salarial
+SELECT e.emp_no, e.first_name, MAX(s.salary),
+CASE
+WHEN MAX(s.salary) > 65000 THEN 'high'
+ELSE 'low'
+END AS salary_category,
+CASE
+WHEN MAX(s.salary) > 65000 THEN MAX(s.salary)
+ELSE MAX(s.salary) * 1.01
+END AS new_salary
+FROM employees AS e
+INNER JOIN salaries AS s ON e.emp_no = s.emp_no
+GROUP BY e.emp_no;
