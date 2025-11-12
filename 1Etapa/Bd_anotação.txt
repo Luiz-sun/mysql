@@ -1,0 +1,98 @@
+Resumo de Comandos SQL com Exemplos Prticos
+Bancos utilizados: Sakila, Employees, ClassicModels
+Filtros (SELECT, WHERE, BETWEEN, NOT, AND, OR)
+-- Seleciona atores com nome 'Cristian'
+SELECT actor_id, first_name, last_name
+FROM actor
+WHERE first_name = 'Cristian';
+-- Seleciona pagamentos com valores inferiores a 5
+SELECT payment_id, payment_date, amount
+FROM payment
+WHERE NOT amount >= 5;
+-- Valores entre 5 e 10
+SELECT payment_id, payment_date, amount
+FROM payment
+WHERE amount BETWEEN 5 AND 10;
+DISTINCT e ORDER BY
+-- Lista nomes nicos de atores
+SELECT DISTINCT first_name
+FROM actor;
+-- Ordenao ascendente por data
+SELECT * FROM customer
+ORDER BY create_date ASC;
+-- Ordenao descendente
+SELECT * FROM customer
+ORDER BY create_date DESC;
+Funes Agregadas (MIN, MAX, AVG, COUNT, SUM)
+SELECT MIN(amount) AS Valor_minimo FROM payment;
+SELECT AVG(amount) AS Valor_medio FROM payment;
+SELECT MAX(amount) AS Valor_maximo FROM payment;
+SELECT COUNT(*) AS Total_pagamentos FROM payment;
+SELECT SUM(amount) AS Soma_total FROM payment;
+IFNULL, COALESCE e AS (Apelidos)
+-- Substitui nulos por texto padro
+SELECT address_id, address, IFNULL(address2, 'cheiro bom') AS Tipo_Cheiro FROM address;
+-- Usa o primeiro valor no nulo
+SELECT COALESCE(address2, 'cheiro bom', postal_code, 999) AS Tipo_Cheiro FROM address;
+-- Criando colunas temporrias com AS
+SELECT payment_id, customer_id, rental_id + amount AS Pagamentos_totais FROM payment;
+Modificao de Tabelas e Dados
+-- Insero
+INSERT INTO city (city, country_id) VALUES ('Chique Chique Bahia', 20);
+
+-- Atualizao
+UPDATE city SET city = 'xiquetoso bahia' WHERE city_id = 603;
+-- Excluso
+DELETE FROM city WHERE city_id = 603;
+-- Alterar estrutura da tabela
+ALTER TABLE film ADD IMDB_TOMATO VARCHAR(250);
+ALTER TABLE film MODIFY rental_duration INT NULL;
+ALTER TABLE film DROP COLUMN IMDB_TOMATO;
+JOINS com Explicaes
+-- INNER JOIN: registros presentes em ambas as tabelas
+SELECT c.customer_id, p.payment_id
+FROM customer c
+INNER JOIN payment p ON c.customer_id = p.customer_id;
+-- LEFT JOIN: todos da esquerda + correspondentes da direita
+SELECT e.emp_no, s.salary
+FROM employees e
+LEFT JOIN salaries s ON e.emp_no = s.emp_no;
+-- RIGHT JOIN: todos da direita + correspondentes da esquerda
+SELECT e.emp_no, d.dept_name
+FROM employees e
+RIGHT JOIN dept_emp d ON e.emp_no = d.emp_no;
+-- FULL OUTER JOIN (simulado com UNION)
+SELECT * FROM A LEFT JOIN B ON A.id = B.id
+UNION
+SELECT * FROM A RIGHT JOIN B ON A.id = B.id;
+-- CROSS JOIN: combinao cartesiana
+SELECT * FROM customers CROSS JOIN products;
+-- EXCLUDE JOIN: registros da esquerda sem correspondncia na direita
+SELECT a.* FROM A a
+LEFT JOIN B b ON a.id = b.a_id
+WHERE b.a_id IS NULL;
+Exemplos Prticos
+-- Classificando salrios com CASE
+SELECT e.emp_no, e.first_name, MAX(s.salary),
+CASE
+WHEN MAX(s.salary) > 65000 THEN 'high'
+ELSE 'low'
+END AS salary_category,
+CASE
+WHEN MAX(s.salary) > 65000 THEN MAX(s.salary)
+ELSE MAX(s.salary) * 1.01
+END AS new_salary
+FROM employees e
+INNER JOIN salaries s ON e.emp_no = s.emp_no
+
+GROUP BY e.emp_no;
+-- Subquery com mdia no WHERE
+SELECT amount FROM payment
+WHERE amount > (SELECT AVG(amount) FROM payment)
+ORDER BY amount DESC;
+Dicas e Boas Prticas
+- Sempre utilize AS para apelidar colunas temporrias.
+- Use COALESCE para tratar valores nulos.
+- Prefira INNER JOIN para integridade nos dados.
+- Use comentrios para documentar queries.
+- Teste subqueries em partes.

@@ -1,0 +1,16 @@
+Pessoal, 
+
+segue abaixo um código que pode ser útil para a prova. Montagem de campo texto do valor variável. 
+No caso, foi usado a base de dados classicmodels.
+
+# o cliente: NOME DO CLIENTE pagou o valor: VALOR PAGO
+
+SELECT
+  CONCAT('O cliente :' , customerName, 'pagou o valor: ', sum(amount)) OBSERVACAO
+FROM
+  CUSTOMERS
+    INNER JOIN PAYMENTS USING (CUSTOMERNUMBER)
+GROUP BY
+  
+
+customerName;
